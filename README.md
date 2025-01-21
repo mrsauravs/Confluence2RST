@@ -20,17 +20,11 @@ The script requires the following libraries:
 - beautifulsoup4
 - openai
 
-1. Install them using pip:
+Install them using pip:
 
-`pip install requests beautifulsoup4` or,
+`pip install requests beautifulsoup4 openai` or,
 
-`pip3 install requests beautifulsoup4`
-
-2. Install openai library:
-
-`pip install openai` or,
-
-`pip3 install openai`
+`pip3 install requests beautifulsoup4 openai`
 
 ## Download the Script
 
