@@ -46,7 +46,8 @@ Install them using pip:
 
     - **Confluence Page ID**: Enter the unique ID of the Confluence page you want to fetch.
     - **Base URL**: Enter your Confluence base URL (e.g., https://your-domain.atlassian.net).
-    - **API Token**: Provide a valid API token for authentication.
+    - **API Token for Confluence**: Provide a valid API token for authentication.
+    - **Open AI API Key**: Provide a valid Open AI API key from your Open AI account.
 
 3. Check the Output
    The script will fetch the Confluence page, convert it to reStructuredText format, and save it as a .rst file in the same directory.
