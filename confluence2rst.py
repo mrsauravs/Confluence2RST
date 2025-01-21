@@ -1,6 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
+import openai
 
+# Fetch content from Confluence
 def fetch_confluence_page(page_id, base_url, token):
     """Fetch content from Confluence using the REST API"""
     url = f"{base_url}/wiki/rest/api/content/{page_id}?expand=body.storage"
@@ -13,6 +15,24 @@ def fetch_confluence_page(page_id, base_url, token):
         print(f"Error fetching Confluence page: {e}")
         exit(1)
 
+# Rewrite content using OpenAI
+def rewrite_content_with_ai(text):
+    """Use OpenAI API to rewrite content"""
+    try:
+        openai.api_key = input("Enter your OpenAI API Key: ").strip()
+        response = openai.ChatCompletion.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a technical writer rewriting content in professional US English."},
+                {"role": "user", "content": text}
+            ]
+        )
+        return response['choices'][0]['message']['content']
+    except Exception as e:
+        print(f"Error rewriting content with AI: {e}")
+        return text  # Return the original text if AI fails
+
+# Parse Confluence content
 def parse_confluence_content(confluence_data):
     """Parse Confluence content and convert it to reStructuredText"""
     title = confluence_data['title']
@@ -27,20 +47,30 @@ def parse_confluence_content(confluence_data):
     # Process each element in the Confluence page body
     for element in soup.body.children:
         if element.name == 'h1':
-            rst_content += f"\n{element.text}\n{'=' * len(element.text)}\n"
+            text = element.text
+            rewritten = rewrite_content_with_ai(text)
+            rst_content += f"\n{rewritten}\n{'=' * len(rewritten)}\n"
         elif element.name == 'h2':
-            rst_content += f"\n{element.text}\n{'-' * len(element.text)}\n"
+            text = element.text
+            rewritten = rewrite_content_with_ai(text)
+            rst_content += f"\n{rewritten}\n{'-' * len(rewritten)}\n"
         elif element.name == 'p':
-            rst_content += f"{element.text}\n\n"
+            text = element.text
+            rewritten = rewrite_content_with_ai(text)
+            rst_content += f"{rewritten}\n\n"
         elif element.name == 'pre':
             rst_content += f".. code-block::\n\n    {element.text.strip().replace('\n', '\n    ')}\n\n"
         elif element.name == 'ul':
             for li in element.find_all('li'):
-                rst_content += f"- {li.text}\n"
+                text = li.text
+                rewritten = rewrite_content_with_ai(text)
+                rst_content += f"- {rewritten}\n"
             rst_content += '\n'
         elif element.name == 'ol':
             for i, li in enumerate(element.find_all('li'), start=1):
-                rst_content += f"{i}. {li.text}\n"
+                text = li.text
+                rewritten = rewrite_content_with_ai(text)
+                rst_content += f"{i}. {rewritten}\n"
             rst_content += '\n'
         elif element.name == 'table':
             rows = element.find_all('tr')
@@ -57,6 +87,7 @@ def parse_confluence_content(confluence_data):
 
     return rst_content
 
+# Save content to .rst file
 def save_to_file(file_name, content):
     """Save content to .rst file"""
     try:
