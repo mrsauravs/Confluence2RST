@@ -1,4 +1,4 @@
-# Confluence2RST
+# Confluence to reST
 
 A simple Python script that converts your Confluence page into restructured text.
 
